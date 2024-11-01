@@ -3,17 +3,15 @@ package com.example.voting
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
-import com.example.voting.Paillier
+import org.json.JSONArray
 import java.math.BigInteger
-import java.util.*
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.Random
 import kotlin.concurrent.thread
-import org.json.JSONArray
 
 class MainActivity : ComponentActivity() {
     private val paillier = Paillier() // Create an instance of the Paillier class
@@ -21,7 +19,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_voting_page)
+        setContentView(R.layout.activity_main)
 
     }
 
@@ -124,7 +122,11 @@ class MainActivity : ComponentActivity() {
                     val errorMessage = connection.inputStream.bufferedReader().readText()
                     Log.e("VoteError", "Response Code: $responseCode, Message: $errorMessage")
                     runOnUiThread {
-                        Toast.makeText(this, "Failed to send vote: $errorMessage", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this,
+                            "Failed to send vote: $errorMessage",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             } catch (e: Exception) {
@@ -167,7 +169,9 @@ class Paillier {
     }
 
     fun decrypt(c: BigInteger): BigInteger {
-        val u = c.modPow(lambda, n.multiply(n)).subtract(BigInteger.valueOf(1)).divide(n).multiply(mu).mod(n)
+        val u =
+            c.modPow(lambda, n.multiply(n)).subtract(BigInteger.valueOf(1)).divide(n).multiply(mu)
+                .mod(n)
         return u
     }
 }

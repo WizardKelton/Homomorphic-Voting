@@ -1,5 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.Voting" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Voting" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/matteBlack</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:colorBackground">@color/matteBlack</item>
+        <!-- Customize other theme attributes as needed -->
+    </style>
 </resources>

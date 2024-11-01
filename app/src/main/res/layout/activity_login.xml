@@ -1,0 +1,74 @@
+<!-- res/layout/activity_login.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@drawable/bgimage">
+
+    <!-- Title TextView -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login"
+        android:textColor="@color/gray"
+        android:textSize="32sp"
+        android:layout_marginBottom="24dp"
+        />
+
+    <!-- Email Input -->
+    <EditText
+        android:id="@+id/emailInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/email"
+        android:textColor="@color/white"
+        android:textColorHint="#3C3939"
+        android:backgroundTint="@color/white"
+        android:padding="12dp"
+        android:inputType="textEmailAddress"
+        android:background="@drawable/rounded_edittext"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Password Input -->
+    <EditText
+        android:id="@+id/passwordInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/password"
+        android:textColor="@color/white"
+        android:textColorHint="#3C3939"
+        android:backgroundTint="@color/white"
+        android:padding="12dp"
+        android:inputType="textPassword"
+        android:background="@drawable/rounded_edittext"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Login Button with Rounded Corners and Gradient -->
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="121dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_edittext"
+        android:backgroundTint="@color/white"
+        android:elevation="4dp"
+        android:onClick="authenticate"
+        android:padding="12dp"
+        android:text="Login"
+        android:textColor="@color/white" />
+
+
+    <!-- Forgot Password Text -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot Password?"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

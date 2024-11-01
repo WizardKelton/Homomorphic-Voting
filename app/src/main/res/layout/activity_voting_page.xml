@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".VotingPage">
 
     <!-- Modern CardView with rounded corners and shadow -->
@@ -13,7 +14,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:clickable="true"
         android:elevation="8dp"
+        android:focusable="true"
+        android:onClick="navigateToNewScreen"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
@@ -33,7 +37,7 @@
                 android:id="@+id/voteTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vote Title"
+                android:text="@string/vote_title"
                 android:textColor="#212121"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -43,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Status"
+                android:text="@string/status"
                 android:textColor="#424242"
                 android:textSize="16sp" />
 
@@ -57,7 +61,7 @@
                 android:id="@+id/voteStartTimeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Start Time"
+                android:text="@string/start_time"
                 android:textColor="#666666"
                 android:textSize="14sp" />
 
@@ -66,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="End Time"
+                android:text="@string/end_time"
                 android:textColor="#666666"
                 android:textSize="14sp" />
         </LinearLayout>

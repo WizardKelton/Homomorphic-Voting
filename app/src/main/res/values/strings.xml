@@ -13,4 +13,14 @@
     <string name="vote_3">vote 3</string>
     <string name="vote_1">vote 1</string>
     <string name="vote_for_your_candidate">Vote For Your Candidate</string>
+    <string name="vote_title">Vote Title</string>
+    <string name="status">Status</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="candidate_description">Candidate Description </string>
+    <string name="candidate_name">Candidate Name </string>
+    <string name="candidate_symbol">candidate_symbol</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
 </resources>
