@@ -5,11 +5,18 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.cardview.widget.CardView
+import com.example.voting.data.Election
+import com.example.voting.data.RetrofitInstance
 import com.example.voting.databinding.CandidateCardBinding
 import org.json.JSONArray
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.Callback
 import java.math.BigInteger
 import java.net.HttpURLConnection
 import java.net.URL
@@ -19,40 +26,93 @@ import kotlin.concurrent.thread
 class MainActivity : ComponentActivity() {
     private val paillier = Paillier() // Create an instance of the Paillier class
 
+    private var selectedCandidate: Candidate? = null // Track selected candidate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Sample candidate data, replace with your actual fetched data
-        val candidateList = listOf(
-            Candidate("1", "Candidate 1", "Party A", "Experienced leader", R.drawable.candidate_symbol_placeholder),
-            Candidate("2", "Candidate 2", "Party B", "Innovative thinker", R.drawable.candidate_symbol_placeholder),
-            Candidate("3", "Candidate 3", "Party C", "Community advocate", R.drawable.candidate_symbol_placeholder)
-        )
+        // Fetch candidates dynamically from the backend
+        fetchCandidates("672762abaa4e2b0f75661231") // Replace "electionId" with the actual ID
 
-        // Reference to the container where candidate cards will be added
+        val submitVoteButton = findViewById<Button>(R.id.sendVoteButton)
+        submitVoteButton.setOnClickListener {
+            submitVote()
+        }
+    }
+
+    private fun fetchCandidates(electionId: String) {
+        RetrofitInstance.api.getElectionById(electionId).enqueue(object : Callback<Election> {
+            override fun onResponse(call: Call<Election>, response: Response<Election>) {
+                if (response.isSuccessful) {
+                    val election = response.body()
+                    election?.candidates?.let { displayCandidates(it) }
+                } else {
+                    Log.e("Election Data", "Failed to retrieve election: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<Election>, t: Throwable) {
+                Log.e("Election Data", "Network error: ${t.message}")
+            }
+        })
+    }
+
+
+    private fun displayCandidates(candidateList: List<Candidate>) {
         val candidateContainer = findViewById<LinearLayoutCompat>(R.id.electionRecyclerView)
+        candidateContainer.removeAllViews()
 
-        // Inflate and add each candidate card dynamically
         for (candidate in candidateList) {
             val cardBinding = CandidateCardBinding.inflate(LayoutInflater.from(this))
 
-            // Bind the candidate data
+            // Set candidate details
             cardBinding.candidateName.text = candidate.name
             cardBinding.candidateDescription.text = candidate.description
-            cardBinding.candidateSymbol.setImageResource(candidate.profilePicture) // Assuming symbolResId is a drawable resource ID
+            cardBinding.candidateSymbol.setImageResource(candidate.profilePicture)
+
+            // Handle card selection
+            cardBinding.root.setOnClickListener {
+                selectedCandidate = candidate // Update selected candidate
+                updateCardSelection(candidateContainer, cardBinding.root) // Update UI
+            }
 
             val params = LinearLayoutCompat.LayoutParams(
                 LinearLayoutCompat.LayoutParams.MATCH_PARENT,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
             )
-            params.setMargins(0, 0, 0, 20) // (left, top, right, bottom) margins in pixels or use resources for dp
+            params.setMargins(5, 0, 5, 35)
             cardBinding.root.layoutParams = params
 
-            // Add the card to the container
             candidateContainer.addView(cardBinding.root)
         }
     }
+
+    private fun updateCardSelection(container: LinearLayoutCompat, selectedCard: CardView) {
+        // Deselect all cards
+        for (i in 0 until container.childCount) {
+            val card = container.getChildAt(i) as CardView
+            card.isSelected = false
+            card.setCardBackgroundColor(resources.getColor(android.R.color.white))
+        }
+        // Select the clicked card
+        selectedCard.isSelected = true
+        selectedCard.setCardBackgroundColor(resources.getColor(R.color.selected_card_background))
+    }
+
+
+
+    private fun submitVote() {
+        selectedCandidate?.let { candidate ->
+            // Call backend API to submit vote for the selected candidate
+            Log.d("Vote Submission", "Submitting vote for: ${candidate.name}")
+        } ?: run {
+            Toast.makeText(this, "Please select a candidate", Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+
 
     fun firstvote(view: View) {
         // Vector to encrypt

@@ -3,5 +3,5 @@ data class Candidate(
     val name: String,
     val party: String,
     val description: String,
-    val profilePicture: Int
+    val profilePicture: Int,
 )

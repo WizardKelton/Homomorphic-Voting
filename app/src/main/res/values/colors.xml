@@ -11,4 +11,5 @@
     <color name="gray">#FF757575</color>
     <color name="matteBlack">#000000</color>
     <color name="hintGray">#AAAAAA</color>
+    <color name="selected_card_background">#ADD8E6</color>
 </resources>
