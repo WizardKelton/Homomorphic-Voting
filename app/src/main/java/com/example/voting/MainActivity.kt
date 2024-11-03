@@ -1,11 +1,14 @@
 package com.example.voting
 
+import Candidate
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.widget.LinearLayoutCompat
+import com.example.voting.databinding.CandidateCardBinding
 import org.json.JSONArray
 import java.math.BigInteger
 import java.net.HttpURLConnection
@@ -18,9 +21,37 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        // Sample candidate data, replace with your actual fetched data
+        val candidateList = listOf(
+            Candidate("1", "Candidate 1", "Party A", "Experienced leader", R.drawable.candidate_symbol_placeholder),
+            Candidate("2", "Candidate 2", "Party B", "Innovative thinker", R.drawable.candidate_symbol_placeholder),
+            Candidate("3", "Candidate 3", "Party C", "Community advocate", R.drawable.candidate_symbol_placeholder)
+        )
+
+        // Reference to the container where candidate cards will be added
+        val candidateContainer = findViewById<LinearLayoutCompat>(R.id.electionRecyclerView)
+
+        // Inflate and add each candidate card dynamically
+        for (candidate in candidateList) {
+            val cardBinding = CandidateCardBinding.inflate(LayoutInflater.from(this))
+
+            // Bind the candidate data
+            cardBinding.candidateName.text = candidate.name
+            cardBinding.candidateDescription.text = candidate.description
+            cardBinding.candidateSymbol.setImageResource(candidate.profilePicture) // Assuming symbolResId is a drawable resource ID
+
+            val params = LinearLayoutCompat.LayoutParams(
+                LinearLayoutCompat.LayoutParams.MATCH_PARENT,
+                LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0, 0, 0, 20) // (left, top, right, bottom) margins in pixels or use resources for dp
+            cardBinding.root.layoutParams = params
+
+            // Add the card to the container
+            candidateContainer.addView(cardBinding.root)
+        }
     }
 
     fun firstvote(view: View) {

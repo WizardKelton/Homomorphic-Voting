@@ -2,78 +2,38 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".VotingPage">
+    tools:context="VotingPage">
 
-    <!-- Modern CardView with rounded corners and shadow -->
+    <!-- RecyclerView to display election cards -->
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="0dp"
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:elevation="8dp"
-        android:focusable="true"
-        android:onClick="navigateToNewScreen"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="8dp"
+        android:onClick="navigateToVoting"
+        android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.121">
+        app:layout_constraintVertical_bias="0.88" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="171dp"
-            android:orientation="vertical"
-            android:padding="24dp">
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/electionRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"
 
-            <TextView
-                android:id="@+id/voteTitleTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/vote_title"
-                android:textColor="#212121"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+        android:onClick="navigateToVoting"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
 
-            <TextView
-                android:id="@+id/voteStatusTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/status"
-                android:textColor="#424242"
-                android:textSize="16sp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginVertical="12dp"
-                android:background="#E0E0E0" />
-
-            <TextView
-                android:id="@+id/voteStartTimeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/start_time"
-                android:textColor="#666666"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/voteEndTimeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/end_time"
-                android:textColor="#666666"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

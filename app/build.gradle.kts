@@ -63,7 +63,7 @@ dependencies {
 
 
     // Add Bouncy Castle dependency
-    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+    implementation(libs.bcprov.jdk15on)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.annotation)
@@ -78,4 +78,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation (libs.retrofit)       // Retrofit
+    implementation (libs.converter.gson)  // JSON Converter
+    implementation (libs.logging.interceptor) // Optional, for logging network calls
 }
