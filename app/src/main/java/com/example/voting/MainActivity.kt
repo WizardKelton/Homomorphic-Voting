@@ -32,8 +32,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Fetch candidates dynamically from the backend
-        fetchCandidates("672762abaa4e2b0f75661231") // Replace "electionId" with the actual ID
+        val electionId = intent.getStringExtra("ELECTION_ID")
+        Log.d("VotingActivity", "Received Election ID: $electionId")
+
+        // Check if electionId is not null before fetching candidates
+        if (electionId != null) {
+            // Fetch candidates dynamically from the backend using the election ID
+            fetchCandidates(electionId) // Use the actual election ID
+        } else {
+            Log.e("VotingActivity", "Election ID is null. Unable to fetch candidates.")
+            // Handle the error appropriately (e.g., show a message to the user)
+        }
 
         val submitVoteButton = findViewById<Button>(R.id.sendVoteButton)
         submitVoteButton.setOnClickListener {

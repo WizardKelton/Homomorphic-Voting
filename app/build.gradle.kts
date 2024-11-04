@@ -82,4 +82,8 @@ dependencies {
     implementation (libs.retrofit)       // Retrofit
     implementation (libs.converter.gson)  // JSON Converter
     implementation (libs.logging.interceptor) // Optional, for logging network calls
+
+    implementation (libs.moshi)// Check for the latest version
+    implementation (libs.moshi.kotlin) // For Kotlin support
+    implementation (libs.converter.moshi) // Moshi converter for Retrofit
 }

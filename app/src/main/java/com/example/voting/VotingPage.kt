@@ -20,7 +20,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 class VotingPage : AppCompatActivity() {
-
+    private var selectedCandidate: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voting_page)
@@ -40,6 +40,7 @@ class VotingPage : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val electionList = response.body()
                     electionList?.let { displayElections(it) }
+                    Log.d("Election Data", "Response: $electionList")
                 } else {
                     Log.e("Election Data", "Failed to retrieve elections: ${response.errorBody()?.string()}")
                 }
@@ -68,8 +69,8 @@ class VotingPage : AppCompatActivity() {
             cardBinding.voteStatusTextView.text = election.status
 
             // Parse the date strings into Date objects
-            val startTimeDate = convertStringToDate(election.startTime)
-            val endTimeDate = convertStringToDate(election.endTime)
+            val startTimeDate =  election.startTime
+            val endTimeDate = election.endTime
 
             Log.d("Election Data", "Start Time: ${election.startTime}, End Time: ${election.endTime}")
 
@@ -85,6 +86,17 @@ class VotingPage : AppCompatActivity() {
             params.setMargins(0, 0, 0, 20)
             cardBinding.root.layoutParams = params
 
+            cardBinding.root.setOnClickListener {
+                selectedCandidate = election.id // Store the election ID in selectedCandidate
+                Log.d("Selected Candidate", "Selected Election ID: $selectedCandidate")
+                val intent1 = Intent(this, MainActivity::class.java).apply{
+                    putExtra("ELECTION_ID", selectedCandidate)
+                }
+                startActivity(intent1)
+                // Optionally, navigate to another activity or perform another action
+                // navigateToVoting(it) // Uncomment if you want to navigate after selection
+            }
+
             electionContainer.addView(cardBinding.root)
 
             Log.d("Election Data", "Start Time: ${election.startTime}, End Time: ${election.endTime}")
@@ -93,8 +105,8 @@ class VotingPage : AppCompatActivity() {
 
     private fun convertStringToDate(dateString: String): Date? {
         return try {
-            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-            format.timeZone = TimeZone.getTimeZone("UTC") // Ensure the correct time zone
+            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+            format.timeZone = TimeZone.getTimeZone("UTC")
             format.parse(dateString)
         } catch (e: Exception) {
             Log.e("Date Conversion", "Error parsing date: $dateString", e)
