@@ -1,7 +1,8 @@
+import com.squareup.moshi.Json
+
 data class Candidate(
-    val number: String,
     val name: String,
-    val party: String,
+    val profilepicture: String,
     val description: String,
-    val profilePicture: Int,
+    val votes: List<Int>
 )

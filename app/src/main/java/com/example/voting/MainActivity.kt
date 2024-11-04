@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
+import com.bumptech.glide.Glide
 import com.example.voting.data.Election
 import com.example.voting.data.RetrofitInstance
 import com.example.voting.databinding.CandidateCardBinding
@@ -23,6 +24,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Random
 import kotlin.concurrent.thread
+import java.net.URLDecoder
 
 class MainActivity : ComponentActivity() {
     private val paillier = Paillier() // Create an instance of the Paillier class
@@ -61,6 +63,7 @@ class MainActivity : ComponentActivity() {
             override fun onResponse(call: Call<Election>, response: Response<Election>) {
                 if (response.isSuccessful) {
                     val election = response.body()
+                    Log.d("VotingData", "Received Body: ${response.body()}")
                     election?.candidates?.let { displayCandidates(it) }
                 } else {
                     Log.e("Election Data", "Failed to retrieve election: ${response.errorBody()?.string()}")
@@ -84,7 +87,20 @@ class MainActivity : ComponentActivity() {
             // Set candidate details
             cardBinding.candidateName.text = candidate.name
             cardBinding.candidateDescription.text = candidate.description
-            cardBinding.candidateSymbol.setImageResource(candidate.profilePicture)
+
+            // Load the image from URL
+            if (!candidate.profilepicture.isNullOrEmpty()) {
+                val decodedUrl = URLDecoder.decode(candidate.profilepicture, "UTF-8") // Decode URL
+
+                Glide.with(this)
+                    .load(decodedUrl) // Load the decoded URL
+                    .placeholder(R.drawable.candidate_symbol_placeholder) // Placeholder while loading
+                    .error(R.drawable.error_image) // Error image if load fails
+                    .into(cardBinding.candidateSymbol)
+            } else {
+                // Set a default placeholder if the URL is null or empty
+                cardBinding.candidateSymbol.setImageResource(R.drawable.candidate_symbol_placeholder)
+            }
 
             // Handle card selection
             cardBinding.root.setOnClickListener {
@@ -127,6 +143,21 @@ class MainActivity : ComponentActivity() {
                 editor.putInt(electionId!!, 1) // Mark as voted (1)
                 editor.apply()
 
+                val encryptedVotes = sendVotes(candidate.votes, paillier)
+
+// Optional: Decrypt to verify
+                val decryptedVotes = encryptedVotes.map { paillier.decrypt(it) }
+                Toast.makeText(
+                    this,
+                    "Decrypted Votes: ${decryptedVotes.joinToString(", ")}",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                Log.d("Vote Submission", "Submitting vote as: $encryptedVotes")
+                Log.d("Vote Submission", "Decrypted vote as: $decryptedVotes")
+
+                sendVotesToServer(encryptedVotes)
+
                 // Return to VotingPage
                 val intent = Intent(this, VotingPage::class.java)
                 startActivity(intent)
@@ -140,7 +171,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    fun sendVotes(candidateVotes: List<Int>, paillier: Paillier): List<BigInteger> {
+        val encryptedVotes = candidateVotes.map { vote -> paillier.encrypt(BigInteger.valueOf(vote.toLong())) }
 
+        // Display encrypted values for debugging
+        Toast.makeText(
+            this,
+            "Encrypted Votes: ${encryptedVotes.joinToString(", ")}",
+            Toast.LENGTH_LONG
+        ).show()
+
+        return encryptedVotes
+    }
 
     fun firstvote(view: View) {
         // Vector to encrypt

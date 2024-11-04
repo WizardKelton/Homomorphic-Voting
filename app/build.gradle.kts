@@ -90,6 +90,9 @@ dependencies {
     implementation (libs.moshi.kotlin) // For Kotlin support
     implementation (libs.converter.moshi) // Moshi converter for Retrofit
 
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
+
 
 
 
