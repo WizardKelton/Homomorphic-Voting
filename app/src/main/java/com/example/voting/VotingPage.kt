@@ -20,17 +20,36 @@ import java.util.Locale
 import java.util.TimeZone
 
 class VotingPage : AppCompatActivity() {
-    private var selectedCandidate: String? = null
+    val votingStatus = mutableMapOf<String, Int>() // Dictionary to track if the user has voted
+    private val sharedPreferences by lazy {
+        getSharedPreferences("VotingAppPreferences", MODE_PRIVATE)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voting_page)
 
-        // Fetch elections from backend and display them
+        loadVotingStatus() // Load saved voting status on startup
         fetchElections()
 
         val refreshButton = findViewById<Button>(R.id.refresh)
         refreshButton.setOnClickListener {
-            fetchElections() // Call fetchElections on button click
+            fetchElections() // Refresh the elections list
+        }
+
+        //TESTING ______________
+        setTestVotingStatus("6728650bec18a3eba8ea4514", 1)
+    }
+
+    // Save the voting status dictionary in SharedPreferences
+
+
+    // Load the voting status dictionary from SharedPreferences
+    private fun loadVotingStatus() {
+        sharedPreferences.all.forEach { (key, value) ->
+            if (value is Int) {
+                votingStatus[key] = value
+            }
         }
     }
 
@@ -49,9 +68,6 @@ class VotingPage : AppCompatActivity() {
             override fun onFailure(call: Call<List<Election>>, t: Throwable) {
                 Log.e("Election Data", "Network error: ${t.message}")
             }
-
-
-
         })
     }
 
@@ -68,17 +84,28 @@ class VotingPage : AppCompatActivity() {
             cardBinding.voteTitleTextView.text = election.title
             cardBinding.voteStatusTextView.text = election.status
 
-            // Parse the date strings into Date objects
-            val startTimeDate =  election.startTime
+            // Parse and format the start and end times
+            val startTimeDate = election.startTime
             val endTimeDate = election.endTime
-
-            Log.d("Election Data", "Start Time: ${election.startTime}, End Time: ${election.endTime}")
-
-
-            // Format the parsed dates before setting them to the TextViews
             cardBinding.voteStartTimeTextView.text = dateFormat.format(startTimeDate ?: Date())
             cardBinding.voteEndTimeTextView.text = dateFormat.format(endTimeDate ?: Date())
 
+            // Check if user has voted in this election
+            if (votingStatus[election.id] == 1) {
+                cardBinding.root.isEnabled = false // Make the card non-clickable
+                cardBinding.root.setBackgroundColor(resources.getColor(R.color.greyed_out)) // Grey out the card
+            } else {
+                // Enable click for elections not yet voted on
+                cardBinding.root.isEnabled = true
+                cardBinding.root.setOnClickListener {
+                    val intent = Intent(this, MainActivity::class.java).apply {
+                        putExtra("ELECTION_ID", election.id)
+                    }
+                    startActivity(intent)
+                }
+            }
+
+            // Set layout parameters
             val params = LinearLayoutCompat.LayoutParams(
                 LinearLayoutCompat.LayoutParams.MATCH_PARENT,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
@@ -86,37 +113,21 @@ class VotingPage : AppCompatActivity() {
             params.setMargins(0, 0, 0, 20)
             cardBinding.root.layoutParams = params
 
-            cardBinding.root.setOnClickListener {
-                selectedCandidate = election.id // Store the election ID in selectedCandidate
-                Log.d("Selected Candidate", "Selected Election ID: $selectedCandidate")
-                val intent1 = Intent(this, MainActivity::class.java).apply{
-                    putExtra("ELECTION_ID", selectedCandidate)
-                }
-                startActivity(intent1)
-                // Optionally, navigate to another activity or perform another action
-                // navigateToVoting(it) // Uncomment if you want to navigate after selection
-            }
-
             electionContainer.addView(cardBinding.root)
-
-            Log.d("Election Data", "Start Time: ${election.startTime}, End Time: ${election.endTime}")
         }
     }
 
-    private fun convertStringToDate(dateString: String): Date? {
-        return try {
-            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
-            format.timeZone = TimeZone.getTimeZone("UTC")
-            format.parse(dateString)
-        } catch (e: Exception) {
-            Log.e("Date Conversion", "Error parsing date: $dateString", e)
-            null
-        }
+    // TESTING
+
+    private fun setTestVotingStatus(electionId: String, status: Int) {
+        // Save to SharedPreferences with the correct name
+        val editor = sharedPreferences.edit()
+        editor.putInt(electionId, status) // Use 1 for voted, 0 for not voted
+        editor.apply()
+
+        // Update the in-memory votingStatus map for immediate effect
+        votingStatus[electionId] = status
     }
 
-    // Method to navigate to another activity
-    fun navigateToVoting(view: View) {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-    }
+
 }

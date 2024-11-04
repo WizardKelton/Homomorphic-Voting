@@ -1,7 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+
+
 }
+apply(plugin = "kotlin-kapt")
 
 android {
     namespace = "com.example.voting"
@@ -86,4 +89,10 @@ dependencies {
     implementation (libs.moshi)// Check for the latest version
     implementation (libs.moshi.kotlin) // For Kotlin support
     implementation (libs.converter.moshi) // Moshi converter for Retrofit
+
+
+
+
 }
+
+

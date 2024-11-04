@@ -21,6 +21,7 @@ activity = "1.9.3"
 moshi = "1.14.0"
 moshiKotlin = "1.14.0"
 retrofit = "2.9.0"
+room = "2.5.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,9 +52,12 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-room-runtime = "androidx.room:room-runtime:$room"
+androidx-room-compiler = "androidx.room:room-compiler:$room"
 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
 

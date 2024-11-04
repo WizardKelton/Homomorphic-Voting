@@ -1,6 +1,7 @@
 package com.example.voting
 
 import Candidate
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,23 +27,28 @@ import kotlin.concurrent.thread
 class MainActivity : ComponentActivity() {
     private val paillier = Paillier() // Create an instance of the Paillier class
 
+    private var electionId: String? = null // ID of the election
+
     private var selectedCandidate: Candidate? = null // Track selected candidate
+
+    private val sharedPreferences by lazy {
+        getSharedPreferences("VotingAppPreferences", MODE_PRIVATE)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val electionId = intent.getStringExtra("ELECTION_ID")
+        electionId = intent.getStringExtra("ELECTION_ID")
         Log.d("VotingActivity", "Received Election ID: $electionId")
 
         // Check if electionId is not null before fetching candidates
-        if (electionId != null) {
+        electionId?.let {
             // Fetch candidates dynamically from the backend using the election ID
-            fetchCandidates(electionId) // Use the actual election ID
-        } else {
-            Log.e("VotingActivity", "Election ID is null. Unable to fetch candidates.")
-            // Handle the error appropriately (e.g., show a message to the user)
+            fetchCandidates(it) // Use the actual election ID
         }
+            ?: Log.e("VotingActivity", "Election ID is null. Unable to fetch candidates.")
+        // Handle the error appropriately (e.g., show a message to the user)
 
         val submitVoteButton = findViewById<Button>(R.id.sendVoteButton)
         submitVoteButton.setOnClickListener {
@@ -113,12 +119,25 @@ class MainActivity : ComponentActivity() {
 
     private fun submitVote() {
         selectedCandidate?.let { candidate ->
-            // Call backend API to submit vote for the selected candidate
-            Log.d("Vote Submission", "Submitting vote for: ${candidate.name}")
+            if (electionId != null) {
+                Log.d("Vote Submission", "Submitting vote for: ${candidate.name}")
+
+                // Update voting status for the election and save it in SharedPreferences
+                val editor = sharedPreferences.edit()
+                editor.putInt(electionId!!, 1) // Mark as voted (1)
+                editor.apply()
+
+                // Return to VotingPage
+                val intent = Intent(this, VotingPage::class.java)
+                startActivity(intent)
+                finish() // Close MainActivity
+            } else {
+                Log.e("Vote Submission", "Election ID is null. Unable to submit vote.")
+                Toast.makeText(this, "Error: Election ID is missing", Toast.LENGTH_SHORT).show()
+            }
         } ?: run {
             Toast.makeText(this, "Please select a candidate", Toast.LENGTH_SHORT).show()
         }
-
     }
 
 
