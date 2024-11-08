@@ -26,8 +26,11 @@ import java.util.Random
 import kotlin.concurrent.thread
 import java.net.URLDecoder
 
+var p_main: String? = null
+var q_main: String? = null
+
 class MainActivity : ComponentActivity() {
-    private val paillier = Paillier() // Create an instance of the Paillier class
+
 
     private var electionId: String? = null // ID of the election
 
@@ -47,7 +50,8 @@ class MainActivity : ComponentActivity() {
         // Check if electionId is not null before fetching candidates
         electionId?.let {
             // Fetch candidates dynamically from the backend using the election ID
-            fetchCandidates(it) // Use the actual election ID
+            fetchCandidates(it)
+        // Use the actual election ID
         }
             ?: Log.e("VotingActivity", "Election ID is null. Unable to fetch candidates.")
         // Handle the error appropriately (e.g., show a message to the user)
@@ -58,11 +62,26 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var paillier: Paillier? = null // Create an instance of the Paillier class
+
     private fun fetchCandidates(electionId: String) {
         RetrofitInstance.api.getElectionById(electionId).enqueue(object : Callback<Election> {
             override fun onResponse(call: Call<Election>, response: Response<Election>) {
                 if (response.isSuccessful) {
                     val election = response.body()
+
+                    if (election != null) {
+                        p_main = election.p
+                        q_main = election.q
+
+                        // Only instantiate Paillier after p and q are set
+                        if (p_main != null && q_main != null) {
+                            paillier = Paillier()
+                        } else {
+                            Log.e("VotingData", "Failed to initialize Paillier: p or q is null.")
+                        }
+                    }
+
                     Log.d("VotingData", "Received Body: ${response.body()}")
                     election?.candidates?.let { displayCandidates(it) }
                 } else {
@@ -136,6 +155,15 @@ class MainActivity : ComponentActivity() {
     private fun submitVote() {
         selectedCandidate?.let { candidate ->
             if (electionId != null) {
+
+                val localpaillier = paillier
+
+                if (localpaillier == null) {
+                    Toast.makeText(this, "Encryption not initialized. Try again later.", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+
                 Log.d("Vote Submission", "Submitting vote for: ${candidate.name}")
 
                 // Update voting status for the election and save it in SharedPreferences
@@ -143,10 +171,10 @@ class MainActivity : ComponentActivity() {
                 editor.putInt(electionId!!, 1) // Mark as voted (1)
                 editor.apply()
 
-                val encryptedVotes = sendVotes(candidate.votes, paillier)
+                val encryptedVotes = sendVotes(candidate.votes, localpaillier)
 
 // Optional: Decrypt to verify
-                val decryptedVotes = encryptedVotes.map { paillier.decrypt(it) }
+                val decryptedVotes = encryptedVotes.map { localpaillier.decrypt(it) }
                 Toast.makeText(
                     this,
                     "Decrypted Votes: ${decryptedVotes.joinToString(", ")}",
@@ -184,6 +212,7 @@ class MainActivity : ComponentActivity() {
         return encryptedVotes
     }
 
+    /*
     fun firstvote(view: View) {
         // Vector to encrypt
         val vector = listOf(BigInteger.valueOf(1), BigInteger.valueOf(0), BigInteger.valueOf(0))
@@ -253,6 +282,8 @@ class MainActivity : ComponentActivity() {
         sendVotesToServer(encryptedVector)
     }
 
+     */
+
     private fun sendVotesToServer(encryptedVotes: List<BigInteger>) {
         thread {
             try {
@@ -308,11 +339,12 @@ class Paillier {
     private val lambda: BigInteger
     private val mu: BigInteger
 
+
     init {
         //val p = BigInteger.probablePrime(512, Random())
         //val q = BigInteger.probablePrime(512, Random())
-        val p = BigInteger("1031")
-        val q = BigInteger("2053")
+        val p = BigInteger(p_main)
+        val q = BigInteger(q_main)
         n = p.multiply(q)
         g = n + BigInteger.valueOf(1) // Use BigInteger.valueOf for 1
         lambda = (p - BigInteger.valueOf(1)).multiply(q - BigInteger.valueOf(1))

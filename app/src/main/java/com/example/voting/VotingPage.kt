@@ -63,6 +63,7 @@ class VotingPage : AppCompatActivity() {
                 } else {
                     Log.e("Election Data", "Failed to retrieve elections: ${response.errorBody()?.string()}")
                 }
+
             }
 
             override fun onFailure(call: Call<List<Election>>, t: Throwable) {

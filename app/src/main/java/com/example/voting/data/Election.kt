@@ -10,6 +10,8 @@ data class Election(
     val status: String,
     @Json(name = "start_time") val startTime: Date,
     @Json(name = "end_time") val endTime: Date,
+    val p: String,
+    val q: String,
     val candidates: List<Candidate>,
     val __v: Int
 )

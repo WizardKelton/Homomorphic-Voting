@@ -19,4 +19,7 @@ class Login : AppCompatActivity() {
         val intent = Intent(this, VotingPage::class.java)
         startActivity(intent)
     }
+
+
+
 }
