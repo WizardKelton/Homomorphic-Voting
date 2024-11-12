@@ -1,8 +1,14 @@
 package com.example.voting.data
 
 import Candidate
+import com.example.voting.data.model.LoginRequest
+import com.example.voting.data.model.LoginResponse
+import com.example.voting.data.model.RegisterRequest
+import com.example.voting.data.model.RegisterResponse
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ElectionApiService {
@@ -11,5 +17,11 @@ interface ElectionApiService {
 
     @GET("api/elections/{id}")
     fun getElectionById(@Path("id") electionId: String): Call<Election>
+
+    @POST("login")
+    suspend fun login(@Body request: LoginRequest): LoginResponse
+
+    @POST("register")
+    suspend fun register(@Body request: RegisterRequest): RegisterResponse
 
 }
