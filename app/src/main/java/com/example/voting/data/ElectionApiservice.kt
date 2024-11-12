@@ -6,6 +6,7 @@ import com.example.voting.data.model.LoginResponse
 import com.example.voting.data.model.RegisterRequest
 import com.example.voting.data.model.RegisterResponse
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -18,10 +19,10 @@ interface ElectionApiService {
     @GET("api/elections/{id}")
     fun getElectionById(@Path("id") electionId: String): Call<Election>
 
-    @POST("login")
-    suspend fun login(@Body request: LoginRequest): LoginResponse
+    @POST("api/login")
+    suspend fun login(@Body request: LoginRequest): Response <LoginResponse>
 
-    @POST("register")
-    suspend fun register(@Body request: RegisterRequest): RegisterResponse
+    @POST("api/register")
+    suspend fun register(@Body request: RegisterRequest): Response <RegisterResponse>
 
 }
